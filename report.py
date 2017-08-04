@@ -43,7 +43,7 @@ def get_most_popular_article_authors(limit=5):
 
 
 def get_erroneous_days(limit=5):
-    """Fetches and returns the erroneous day (>1% requests resulted in error)"""
+    """Fetches & returns the erroneous day (>1% requests resulted in error)"""
     query = r"""SELECT requests_by_day.day,
                        errors * 100.0 / requests AS err_pct
                 FROM (
@@ -64,27 +64,25 @@ def get_erroneous_days(limit=5):
 
 
 if __name__ == '__main__':
-    print(' Log Analysis Report '.center(80, '*') + '\n')
+    print(' Log Analysis Report '.center(80, '*'))
 
-    # Report 1
-    top_articles = get_most_popular_articles()
-    for i, article in enumerate(top_articles):
-        if i == 0:
-            print('Report #1 : Most popular articles of all time\n')
-        print("\t{}. {} — {:>6} views".format(i+1, article[0], article[1]))
-
-    # Report 2
-    top_authors = get_most_popular_article_authors()
-    for i, author in enumerate(top_authors):
-        if i == 0:
-            print('\nReport #2 : Most popular article authors of all time\n')
-        print("\t{}. {:<22} — {:>6} views".format(i+1, author[0], author[1]))
-
-    # Report 3
-    erroneous_days = get_erroneous_days()
-    for i, err_day in enumerate(erroneous_days):
-        if i == 0:
-            print('\nReport #3 : '
-                  'Days when more than 1% of requests lead to errors\n')
-        pretty_day = '{dt:%B} {dt.day}, {dt.year}'.format(dt=err_day[0])
-        print("\t{}. {} — {:.2f}% errors".format(i+1, pretty_day, err_day[1]))
+    reports = [
+        {'method': get_most_popular_articles,
+         'title': 'Most popular articles of all time',
+         'format': '{count}. {item} — {aggregate:>6} views'},
+        {'method': get_most_popular_article_authors,
+         'title': 'Most popular article authors of all time',
+         'format': '{count}. {item:<22} — {aggregate:>6} views'},
+        {'method': get_erroneous_days,
+         'title': 'Days when more than 1% of requests lead to errors',
+         'format': '{count}. {item:%B} {item.day}, {item.year}'
+                   ' — {aggregate:.2f} errors'},
+    ]
+    for i, report in enumerate(reports):
+        results = report['method']()
+        for count, result in enumerate(results):
+            if count == 0:
+                print('\nReport #{} : {}\n'.format(i + 1, report['title']))
+            print('\t' + report['format'].format(count=count + 1,
+                                                 item=result[0],
+                                                 aggregate=result[1]))
