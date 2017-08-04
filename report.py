@@ -15,7 +15,7 @@ def fetch_results(query, limit):
 
 def get_most_popular_articles(limit=3):
     """Fetches and returns the top 3 <limit> most popular articles"""
-    query = """SELECT title, count(log.id) AS views
+    query = """SELECT title, COUNT(log.id) AS views
                FROM articles
                JOIN log
                   ON path LIKE '%%' || slug || '%%'
@@ -27,7 +27,7 @@ def get_most_popular_articles(limit=3):
 
 def get_most_popular_article_authors(limit=5):
     """Fetches and returns the most popular authors"""
-    query = """SELECT name, count(log.id) AS views
+    query = """SELECT name, COUNT(log.id) AS views
                FROM log
                JOIN (
                    SELECT name, slug, title
