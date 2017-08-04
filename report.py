@@ -15,30 +15,30 @@ def fetch_results(query, limit):
 
 def get_most_popular_articles(limit=3):
     """Fetches and returns the top 3 <limit> most popular articles"""
-    query = """SELECT title, COUNT(log.id) AS views
-               FROM articles
-               JOIN log
-                  ON path LIKE '%%' || slug || '%%'
-                  AND status = '200 OK'
-               GROUP BY articles.id
-               ORDER BY views DESC"""
+    query = r"""SELECT title, COUNT(log.id) AS views
+                FROM articles
+                JOIN log
+                   ON path LIKE '%' || slug || '%'
+                   AND status = '200 OK'
+                GROUP BY articles.id
+                ORDER BY views DESC"""
     return fetch_results(query, limit)
 
 
 def get_most_popular_article_authors(limit=5):
     """Fetches and returns the most popular authors"""
-    query = """SELECT name, COUNT(log.id) AS views
-               FROM log
-               JOIN (
-                   SELECT name, slug, title
-                   FROM articles
-                   LEFT JOIN authors
-                       ON authors.id = articles.author
-               ) AS article_authors
-                  ON path LIKE '%%' || slug || '%%'
-                  AND status = '200 OK'
-               GROUP BY name
-               ORDER BY views DESC"""
+    query = r"""SELECT name, COUNT(log.id) AS views
+                FROM log
+                JOIN (
+                    SELECT name, slug, title
+                    FROM articles
+                    LEFT JOIN authors
+                        ON authors.id = articles.author
+                ) AS article_authors
+                   ON path LIKE '%' || slug || '%'
+                   AND status = '200 OK'
+                GROUP BY name
+                ORDER BY views DESC"""
     return fetch_results(query, limit)
 
 
